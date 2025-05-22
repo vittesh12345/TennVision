@@ -12,9 +12,17 @@ import requests
 import os
 import math
 import tensorflow as tf
+from dotenv import load_dotenv
 
-# Initialize DeepSeek API
-DEEPSEEK_API_KEY = "sk-0bbc648cccac449681c58620f6f06e42"
+# Load environment variables
+load_dotenv()
+
+# Get DeepSeek API key from environment variable
+DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
+if not DEEPSEEK_API_KEY:
+    print("Warning: DEEPSEEK_API_KEY not found in environment variables")
+    DEEPSEEK_API_KEY = ""  # Set empty string as fallback
+
 DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
 
 def get_random_tennis_advice(stroke_type):
@@ -163,7 +171,7 @@ class TennisAnalyzer:
         self.current_frame = None
         self.cap = None
         
-        # Initialize pose detection
+        # initialize pose detection
         self.mp_pose = mp.solutions.pose
         self.pose = self.mp_pose.Pose(
             static_image_mode=False,
@@ -175,7 +183,7 @@ class TennisAnalyzer:
         # Initialize ball detection
         self.ball_detector = YOLO('yolov8n.pt')
         
-        # Load stroke classification model
+        # load stroke classification model
         try:
             self.stroke_model = tf.keras.models.load_model('tennis_stroke_model.h5')
             print("Stroke classification model loaded successfully")
@@ -183,12 +191,12 @@ class TennisAnalyzer:
             print(f"Warning: Could not load stroke classification model: {e}")
             self.stroke_model = None
         
-        # Colors for visualization
+        # colors for visualization
         self.colors = {
-            'good': (0, 255, 0),    # Green
-            'warning': (0, 255, 255), # Yellow
-            'bad': (0, 0, 255),     # Red
-            'neutral': (255, 255, 255) # White
+            'good': (0, 255, 0),   
+            'warning': (0, 255, 255), 
+            'bad': (0, 0, 255),    
+            'neutral': (255, 255, 255) 
         }
         
         # Create tips window
@@ -197,21 +205,19 @@ class TennisAnalyzer:
         # Stroke types
         self.strokes = ["forehand", "backhand"]
         self.current_stroke = None
-        
-        # Analysis data storage
-        self.pose_landmark_history = [] # Store raw pose landmarks
-        self.ball_position_history = [] # Store raw ball positions
-        self.sequence_length = 30 # Length of sequences for stroke classification
-        
-        # Create GUI elements
+       
+        self.pose_landmark_history = []
+        self.ball_position_history = [] 
+        self.sequence_length = 30 
+    
         self.create_widgets()
         
-        # Configure grid weights to make video frame expandable
+    
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
     def create_widgets(self):
-        # Create main frame
+        # areate main frame
         main_frame = tk.Frame(self.root, padx=10, pady=10)
         main_frame.pack(fill=tk.BOTH, expand=True)
         
@@ -220,11 +226,11 @@ class TennisAnalyzer:
         self.video_frame.pack_propagate(False)  # Prevent frame from resizing to content
         self.video_frame.pack(side=tk.LEFT, anchor='nw', padx=(0, 10))
         
-        # Video display label with fixed max size
+        # video display label with fixed max size
         self.video_label = tk.Label(self.video_frame, bg='black', width=800, height=600)
         self.video_label.pack(fill=tk.BOTH, expand=True)
         
-        # Stroke type label below video
+        # stroke type label below video
         self.stroke_type_label = tk.Label(self.video_frame, text="Detected Stroke: None", font=('Arial', 14, 'bold'), bg='black', fg='white')
         self.stroke_type_label.pack(pady=(10, 0))
         
@@ -237,23 +243,23 @@ class TennisAnalyzer:
                                   width=20, height=2, font=('Arial', 12))
         self.upload_btn.pack(pady=5)
         
-        # Play/Pause button
+        # play/pause button
         self.play_btn = tk.Button(control_frame, text="Play", command=self.toggle_play,
                                 width=20, height=2, font=('Arial', 12), state=tk.DISABLED)
         self.play_btn.pack(pady=5)
         
-        # Analyze button
+        # analyze button
         self.analyze_btn = tk.Button(control_frame, text="Analyze Stroke", command=self.analyze_stroke,
                                    width=20, height=2, font=('Arial', 12), state=tk.DISABLED)
         self.analyze_btn.pack(pady=5)
         
-        # Progress bar for analysis
+        # progress bar for analysis
         self.progress = ttk.Progressbar(control_frame, orient="horizontal", length=200, mode="determinate")
         self.progress.pack(pady=10)
         self.progress['value'] = 0
         self.progress.pack_forget()  # Hide initially
         
-        # Status label
+        # status label
         self.status_label = tk.Label(control_frame, text="Ready", font=('Arial', 10), anchor='w')
         self.status_label.pack(pady=5, fill=tk.X)
 
@@ -262,16 +268,16 @@ class TennisAnalyzer:
             return None, 0.0
 
         try:
-            # Format the pose sequence for the model
-            # Convert list of landmarks to numpy array, flatten each landmark, and reshape
+            # format the pose sequence for the model
+            # convert list of landmarks to numpy array, flatten each landmark, and reshape
             processed_sequence = []
             for landmarks in pose_sequence:
                 if landmarks:
-                    # Flatten landmarks into a list of coordinates
+                    # flatten landmarks into a list of coordinates
                     flattened_landmarks = [(lm.x, lm.y, lm.z, lm.visibility) for lm in landmarks.landmark]
                     processed_sequence.append(np.array(flattened_landmarks).flatten())
                 else:
-                    # Append zeros if landmarks are not detected for a frame
+                    # append zeros if landmarks are not detected for a frame
                     processed_sequence.append(np.zeros(132 * 4)) # Assuming 132 landmarks * 4 values (x,y,z,visibility)
 
             # Convert to numpy array and reshape to (1, sequence_length, num_features, 1)

@@ -26,7 +26,7 @@ TennVision is an advanced tennis stroke analysis system that uses computer visio
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/TennVision.git
+git clone https://github.com/vittesh12345/TennVision.git
 cd TennVision
 ```
 
@@ -41,7 +41,15 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Download required model files:
+4. Set up environment variables:
+   - Create a `.env` file in the project root directory
+   - Add your DeepSeek API key:
+   ```
+   DEEPSEEK_API_KEY=your_api_key_here
+   ```
+   - Note: Keep your `.env` file secure and never commit it to version control
+
+5. Download required model files:
 - YOLOv8 model will be downloaded automatically on first run
 - Place the tennis stroke classification model (tennis_stroke_model.h5) in the project root directory
 
@@ -65,6 +73,7 @@ python tennis_analyzer.py
 - `organize_clips.py`: Utility for organizing training data
 - `requirements.txt`: Project dependencies
 - `tennis_stroke_model.h5`: Pre-trained stroke classification model
+- `.env`: Environment variables file (not tracked in git)
 
 ## Contributing
 
