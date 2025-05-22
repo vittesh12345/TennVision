@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "TennVision",
+			"path": "."
+		},
+		{
+			"name": "forehand",
+			"path": "../my_python_scripts/tennisClass/forehand"
+		},
+		{
+			"name": "backhand",
+			"path": "../Desktop/Tennis1/backhand"
+		}
+	],
+	"settings": {}
+}
