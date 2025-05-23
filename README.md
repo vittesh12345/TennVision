@@ -50,8 +50,11 @@ pip install -r requirements.txt
    - Note: Keep your `.env` file secure and never commit it to version control
 
 5. Download required model files:
-- YOLOv8 model will be downloaded automatically on first run
-- Place the tennis stroke classification model (tennis_stroke_model.h5) in the project root directory
+   - YOLOv8 model will be downloaded automatically on first run
+   - Download the tennis stroke classification model:
+     - Option 1: Train your own model using `train_model.py`
+     - Option 2: Download the pre-trained model from [Releases](https://github.com/vittesh12345/TennVision/releases)
+     - Place the `tennis_stroke_model.h5` file in the project root directory
 
 ## Usage
 
@@ -72,7 +75,7 @@ python tennis_analyzer.py
 - `train_model.py`: Script for training the stroke classification model
 - `organize_clips.py`: Utility for organizing training data
 - `requirements.txt`: Project dependencies
-- `tennis_stroke_model.h5`: Pre-trained stroke classification model
+- `tennis_stroke_model.h5`: Pre-trained stroke classification model (not included in git)
 - `.env`: Environment variables file (not tracked in git)
 
 ## Contributing
