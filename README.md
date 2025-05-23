@@ -6,7 +6,7 @@ TennVision is an advanced tennis stroke analysis system that uses computer visio
 
 - Real-time tennis stroke detection and classification
 - Pose estimation for detailed movement analysis
-- Ball tracking
+- Specialized tennis ball tracking
 - Detailed stroke analysis and feedback
 - User-friendly GUI interface
 - Support for video upload and playback
@@ -50,7 +50,13 @@ pip install -r requirements.txt
    - Note: Keep your `.env` file secure and never commit it to version control
 
 5. Download required model files:
-   - YOLOv8 model will be downloaded automatically on first run
+   - Run the model download script:
+   ```bash
+   python download_models.py
+   ```
+   - This will download:
+     - YOLOv5 tennis ball detection model
+     - YOLOv8 general model (as fallback)
    - Download the tennis stroke classification model:
      - Option 1: Train your own model using `train_model.py`
      - Option 2: Download the pre-trained model from [Releases](https://github.com/vittesh12345/TennVision/releases)
@@ -74,9 +80,11 @@ python tennis_analyzer.py
 - `tennis_analyzer.py`: Main application file
 - `train_model.py`: Script for training the stroke classification model
 - `organize_clips.py`: Utility for organizing training data
+- `download_models.py`: Script to download required models
 - `requirements.txt`: Project dependencies
 - `tennis_stroke_model.h5`: Pre-trained stroke classification model (not included in git)
 - `.env`: Environment variables file (not tracked in git)
+- `models/`: Directory containing downloaded models (not tracked in git)
 
 ## Contributing
 
@@ -90,4 +98,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - MediaPipe for pose estimation
 - YOLOv8 for object detection
+- YOLOv5 for tennis ball detection
 - TensorFlow for machine learning capabilities 

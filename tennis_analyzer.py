@@ -180,8 +180,15 @@ class TennisAnalyzer:
             min_tracking_confidence=0.5
         )
         
-        # Initialize ball detection
-        self.ball_detector = YOLO('yolov8n.pt')
+        # Initialize ball detection with specialized tennis ball model
+        try:
+            # First try to load the specialized tennis ball model
+            self.ball_detector = YOLO('tennis_ball_model.pt')
+            print("Loaded specialized tennis ball detection model")
+        except:
+            # Fallback to general sports ball detection
+            print("Specialized tennis ball model not found, using general sports ball detection")
+            self.ball_detector = YOLO('yolov8n.pt')
         
         # load stroke classification model
         try:
@@ -712,12 +719,18 @@ class TennisAnalyzer:
         return frame
 
     def detect_ball(self, frame):
-        results = self.ball_detector(frame, classes=[32])  # Class 32 is sports ball
+        results = self.ball_detector(frame)
         ball_detections = []
         
         for result in results:
             boxes = result.boxes
             for box in boxes:
+                # For specialized tennis ball model, we don't need to check class
+                # For general sports ball model, check class 32
+                if hasattr(self.ball_detector, 'names') and 'sports ball' in self.ball_detector.names:
+                    if box.cls != 32:  # Skip if not sports ball
+                        continue
+                
                 if box.conf > 0.5:  # Confidence threshold
                     x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
                     ball_detections.append((int(x1), int(y1), int(x2), int(y2)))
